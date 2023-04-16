@@ -13,16 +13,15 @@ function! vimbeats#Run(...) abort
 endfunction
 
 let s:play_toggle = 1
-let s:device_id = '012013d1f70ef84ba5a7bb25dfb8b7a5ea852064'
-function! vimbeats#ToggleSpotify()
+function! vimbeats#ToggleSpotify(device_id)
     if s:play_toggle
         echo 'Pausing spotify'
         call vimbeats#Run('pause')
         let s:play_toggle = 0
     else
         echo 'Playing spotify'
-        if exists('s:device_id')
-            call vimbeats#Run('play', '-d', s:device_id)
+        if a:device_id!=?""
+            call vimbeats#Run('play', '-d', a:device_id)
         else
             call vimbeats#Run('play')
         endif
