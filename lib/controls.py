@@ -1,11 +1,15 @@
 import requests
 import pprint
-from credentials import CLIENT_ID, CLIENT_SECRET
-from auth import do_refresh_token
-from config import get_refresh_token, save_auth_token
+import functools
+
+
+from lib.credentials import CLIENT_ID, CLIENT_SECRET
+from lib.auth import do_refresh_token
+from lib.config import get_refresh_token, save_auth_token
 
 
 def retry_on_401(f):
+    @functools.wraps(f)
     def wrap(*args, **kwargs):
         resp = f(*args, **kwargs)
         if resp.status_code != 401: return resp
@@ -91,3 +95,10 @@ def set_volume(token, volume_percent):
     return requests.put(url,
                         headers=add_auth_header(token),
                         params=data)
+
+@retry_on_401
+def currenly_playing(token):
+    url = r'https://api.spotify.com/v1/me/player/currently-playing'
+    return requests.get(url,
+                        headers=add_auth_header(token))
+

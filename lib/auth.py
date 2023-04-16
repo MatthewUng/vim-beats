@@ -1,6 +1,6 @@
 import base64 as b64
 import requests
-from credentials import CLIENT_ID, CLIENT_SECRET
+from lib.credentials import CLIENT_ID, CLIENT_SECRET
 
 scopes = [
         "user-read-playback-state",

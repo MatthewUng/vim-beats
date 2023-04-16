@@ -3,8 +3,8 @@
 import argparse
 import pprint
 
-from config import get_auth_token
-import controls
+from lib.config import get_auth_token
+import lib.controls as controls
 
 
 COMMANDS = [
@@ -13,6 +13,7 @@ COMMANDS = [
         'next',
         'prev',
         'get-devices',
+        'currently-playing'
 ]
 
 def setup_parser():
@@ -40,6 +41,8 @@ if __name__ == '__main__':
                 auth_token, 
                 device_id=args.device_id,
                 context_uri=args.context_uri)
+        if resp.status_code >= 400:
+            print_if_debug(resp.json())
         print_if_debug(resp.status_code)
     elif args.command == 'pause':
         resp = controls.pause_playback(auth_token)
@@ -55,6 +58,9 @@ if __name__ == '__main__':
     elif args.command == 'get-devices':
         resp = controls.get_devices(auth_token)
         print_if_debug(resp.status_code)
+        pprint.pprint(resp.json())
+    elif args.command == 'currently-playing':
+        resp = controls.get_currently_playing(auth_token) 
         pprint.pprint(resp.json())
     else:
         exit(1)

@@ -1,3 +1,4 @@
 *.pyc
 *.pyo
 **/scratch.py
+**/credentials.py
