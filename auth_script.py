@@ -1,21 +1,31 @@
 #!/usr/local/bin/python3
+
 import http.server
 import os
 import time
 import threading
 
-from auth import get_auth_code, do_access_token
-from config import REFRESH_TOKEN_FILE, AUTH_TOKEN_FILE
-from config import save_auth_token, save_refresh_token
+from lib.auth import get_auth_code, do_access_token
+from lib.config import REFRESH_TOKEN_FILE, AUTH_TOKEN_FILE
+from lib.config import save_auth_token, save_refresh_token
 
 PORT = 8080
+REDIRECT_URI =  "http://localhost:8080"
 
 # determines when to shutdown the server
 # this is set when the auth code is received from spotify
 done = False
-# global variable holding onto the code itself
+# global variable holding onto the authorization code itself
 code = None
+# File storing client id and client secret
+CREDENTIALS_FILE = r'lib/credentials.py'
 
+def create_credentials(client_id, client_secret):
+    with open(CREDENTIALS_FILE, 'w') as f:
+        f.write(f"CLIENT_ID = r'{client_id}'")
+        f.write(f"CLIENT_SECRET = r'{client_secret}'")
+
+# Simple HTTP server to obtain the access code after user authorization
 class SimpleHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         global done, code
@@ -41,13 +51,18 @@ if __name__ == '__main__':
         print("Auth token file already exists.  Skipping authorization...")
         exit()
 
+    if not os.path.isfile(CREDENTIALS_FILE):
+        client_id = input("Input client id: ")
+        client_secret = input("Input client secret: ")
+
+        create_credentials(client_id, client_secret)
+
     server_addr = ('', PORT)
     httpd = http.server.HTTPServer(server_addr, SimpleHandler)
     server_thread = threading.Thread(None, httpd.serve_forever)
     server_thread.start()
 
-
-    get_auth_code()
+    get_auth_code(REDIRECT_URI)
 
     while True:
         if done: 
@@ -58,8 +73,10 @@ if __name__ == '__main__':
 
     server_thread.join()
 
-    auth_token, refresh_token = do_access_token(code)
+    auth_token, refresh_token = do_access_token(code, REDIRECT_URI)
 
     save_auth_token(auth_token)
     save_refresh_token(refresh_token)
+
+    print("Authorization success!")
 
