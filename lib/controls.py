@@ -6,6 +6,7 @@ import functools
 from lib.credentials import CLIENT_ID, CLIENT_SECRET
 from lib.auth import do_refresh_token
 from lib.config import get_refresh_token, save_auth_token
+from lib.api import Song
 
 
 def retry_on_401(f):
@@ -96,9 +97,14 @@ def set_volume(token, volume_percent):
                         headers=add_auth_header(token),
                         params=data)
 
-@retry_on_401
-def currenly_playing(token):
-    url = r'https://api.spotify.com/v1/me/player/currently-playing'
-    return requests.get(url,
-                        headers=add_auth_header(token))
+def current_song(token):
+    resp = get_currently_playing(token)
 
+    js = resp.json()
+
+    name = js['item']['name']
+
+    artists = [x['name'] for x in js['item']['artists']]
+    album = js['item']['album']['name']
+
+    return Song(name, artists, album)

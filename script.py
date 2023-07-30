@@ -13,11 +13,11 @@ COMMANDS = [
         'next',
         'prev',
         'get-devices',
-        'currently-playing'
+        'currently-playing',
+        'current-song'
 ]
 
 def setup_parser():
-
     parser = argparse.ArgumentParser()
     parser.add_argument('command', choices=COMMANDS)
     parser.add_argument('-d', '--device_id', default=None)
@@ -62,6 +62,9 @@ if __name__ == '__main__':
     elif args.command == 'currently-playing':
         resp = controls.get_currently_playing(auth_token) 
         pprint.pprint(resp.json())
+    elif args.command == 'current-song':
+        song = controls.current_song(auth_token)
+        print(song, end='')
     else:
         exit(1)
 

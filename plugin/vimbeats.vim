@@ -1,6 +1,6 @@
-if exists('g:spotify')
-    finish
-endif
+" if exists('g:spotify')
+"     finish
+" endif
 let g:spotify = 1
 
 let s:script_name = '/script.py'
@@ -9,7 +9,13 @@ function! vimbeats#Run(...) abort
     let l:plugindir = expand('<sfile>:p:h')
     let l:script = plugindir . s:script_name
     let l:cmd =  script . ' ' . join(a:000, ' ')
-    call system(cmd)
+    let l:out = system(cmd)
+    return out
+endfunction
+
+function! vimbeats#CurrentlyPlaying() abort
+    let l:out = vimbeats#Run('current-song')
+    return out
 endfunction
 
 let s:play_toggle = 1
@@ -19,24 +25,24 @@ function! vimbeats#ToggleSpotify(device_id)
         call vimbeats#Run('pause')
         let s:play_toggle = 0
     else
-        echo 'Playing spotify'
         if a:device_id!=?""
             call vimbeats#Run('play', '-d', a:device_id)
         else
             call vimbeats#Run('play')
         endif
+        echo vimbeats#CurrentlyPlaying()
         let s:play_toggle = 1
     endif
 endfunction
 
 function! vimbeats#Next()
-    echo "Playing next song"
     silent call vimbeats#Run('next')
+    echo vimbeats#CurrentlyPlaying()
 endfunction
 
 function! vimbeats#Prev()
-    echo "Playing previous song"
     silent call vimbeats#Run('prev')
+    echo vimbeats#CurrentlyPlaying()
 endfunction
 
 function! vimbeats#PlayContext(context_id, context_name)
