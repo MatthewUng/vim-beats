@@ -6,7 +6,7 @@ Simple spotify integration with vim.
 ## Set-up
 1. Create a spotify app [[link](https://developer.spotify.com/dashboard)]
 2. Take note of the client_id and client_secret
-3. Run `auth_script.py` and follow the instructions. The script should prompt you for your 
+3. Run `python3 auth_script.py` and follow the instructions. The script should prompt you for your 
 client id, client secret, and ask to authorize spotify access 
 4. Update your vimrc with your desired macros
 e.g.
@@ -23,7 +23,7 @@ Q: How do I obtain a playlist ID?
 A: https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
 
 Q: How do I obtain a device ID?  
-A: Have Spotify running on the target device and try `./script get-devices`.
+A: Have Spotify running on the target device and try `python3 ./script get-devices`.
 You can find the device id from the printed output
 
 
