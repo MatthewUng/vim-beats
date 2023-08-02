@@ -1,10 +1,19 @@
+import os
+import http.server
+import time
+import threading
+
 # Create credentials file if it doesn't exist
 # File storing client id and client secret
-CREDENTIALS_FILE = r'lib/credentials.py'
+CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), r'lib/credentials.py')
+print('file', CREDENTIALS_FILE)
 
 def create_credentials(client_id, client_secret):
-    with open(CREDENTIALS_FILE, 'w') as f:
-        f.write(f"CLIENT_ID = r'{client_id}\n'")
+    dirname = os.path.dirname(__file__)
+    path = os.path.join(dirname, CREDENTIALS_FILE)
+    print('path', path)
+    with open(path, 'w') as f:
+        f.write(f"CLIENT_ID = r'{client_id}'\n")
         f.write(f"CLIENT_SECRET = r'{client_secret}'")
 
 if not os.path.isfile(CREDENTIALS_FILE):
@@ -14,10 +23,6 @@ if not os.path.isfile(CREDENTIALS_FILE):
     create_credentials(client_id, client_secret)
 
 
-import http.server
-import os
-import time
-import threading
 
 from lib.auth import get_auth_code, do_access_token
 from lib.config import REFRESH_TOKEN_FILE, AUTH_TOKEN_FILE

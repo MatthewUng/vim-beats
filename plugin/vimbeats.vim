@@ -4,12 +4,12 @@ endif
 let g:spotify = 1
 
 let s:script_name = '/script.py'
-let s:plugindir = expand('<sfile>:p:h')
+let s:plugindir = expand('<sfile>:p:h:h')
 
 function! vimbeats#Run(...) abort
     let l:script = s:plugindir . s:script_name
     let l:cmd =  script . ' ' . join(a:000, ' ')
-    let l:out = system(cmd)
+    let l:out = system('python3 '.cmd)
     return out
 endfunction
 
