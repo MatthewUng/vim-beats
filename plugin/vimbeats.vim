@@ -1,13 +1,13 @@
-" if exists('g:spotify')
-"     finish
-" endif
+if exists('g:spotify')
+    finish
+endif
 let g:spotify = 1
 
 let s:script_name = '/script.py'
+let s:plugindir = expand('<sfile>:p:h')
 
 function! vimbeats#Run(...) abort
-    let l:plugindir = expand('<sfile>:p:h')
-    let l:script = plugindir . s:script_name
+    let l:script = s:plugindir . s:script_name
     let l:cmd =  script . ' ' . join(a:000, ' ')
     let l:out = system(cmd)
     return out

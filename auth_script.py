@@ -1,4 +1,18 @@
-#!/usr/local/bin/python3
+# Create credentials file if it doesn't exist
+# File storing client id and client secret
+CREDENTIALS_FILE = r'lib/credentials.py'
+
+def create_credentials(client_id, client_secret):
+    with open(CREDENTIALS_FILE, 'w') as f:
+        f.write(f"CLIENT_ID = r'{client_id}\n'")
+        f.write(f"CLIENT_SECRET = r'{client_secret}'")
+
+if not os.path.isfile(CREDENTIALS_FILE):
+    client_id = input("Input client id: ")
+    client_secret = input("Input client secret: ")
+
+    create_credentials(client_id, client_secret)
+
 
 import http.server
 import os
@@ -17,13 +31,6 @@ REDIRECT_URI =  "http://localhost:8080"
 done = False
 # global variable holding onto the authorization code itself
 code = None
-# File storing client id and client secret
-CREDENTIALS_FILE = r'lib/credentials.py'
-
-def create_credentials(client_id, client_secret):
-    with open(CREDENTIALS_FILE, 'w') as f:
-        f.write(f"CLIENT_ID = r'{client_id}'")
-        f.write(f"CLIENT_SECRET = r'{client_secret}'")
 
 # Simple HTTP server to obtain the access code after user authorization
 class SimpleHandler(http.server.BaseHTTPRequestHandler):
@@ -50,12 +57,6 @@ if __name__ == '__main__':
     if os.path.isfile(AUTH_TOKEN_FILE):
         print("Auth token file already exists.  Skipping authorization...")
         exit()
-
-    if not os.path.isfile(CREDENTIALS_FILE):
-        client_id = input("Input client id: ")
-        client_secret = input("Input client secret: ")
-
-        create_credentials(client_id, client_secret)
 
     server_addr = ('', PORT)
     httpd = http.server.HTTPServer(server_addr, SimpleHandler)
