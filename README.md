@@ -14,7 +14,9 @@ e.g.
 nnoremap <silent> <leader>mm :call vimbeats#ToggleSpotify('<device_id>')<cr>
 nnoremap <leader>mj :call vimbeats#Next()<cr>
 nnoremap <leader>mk :call vimbeats#Prev()<cr>
-nnoremap <leader>m1 :call vimbeats#PlayContext("spotify:playlist:7DUzBdvt1lrM0IVKG93Ibh", "shibe economy")<cr>
+nnoremap <leader>m1 :call vimbeats#PlayContext("spotify:playlist:7DUzBdvt1lrM0IVKG93Ibh")<cr>
+command! -nargs=+ SearchAndQueue :call vimbeats#SearchAndQueue(<q-args>)
+nnoremap <leader>mq :SearchAndQueue<space>
 ```
 
 
