@@ -1,7 +1,9 @@
 import argparse
 import pprint
+import sys
 
 from lib.config import get_auth_token
+from lib.utils import get_playlist_id
 import lib.controls as controls
 
 
@@ -12,7 +14,8 @@ COMMANDS = [
         'prev',
         'get-devices',
         'currently-playing',
-        'current-song'
+        'current-song',
+        'get-playlist'
 ]
 
 def setup_parser():
@@ -63,6 +66,9 @@ if __name__ == '__main__':
     elif args.command == 'current-song':
         song = controls.current_song(auth_token)
         print(song, end='')
+    elif args.command == 'get-playlist':
+        playlist = controls.get_playlist(auth_token, get_playlist_id(args.context_uri))
+        print(playlist, end='')
     else:
         exit(1)
 

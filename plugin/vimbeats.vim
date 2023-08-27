@@ -45,22 +45,17 @@ function! vimbeats#Prev()
     echo vimbeats#CurrentlyPlaying()
 endfunction
 
-function! vimbeats#PlayContext(context_id, context_name)
-    if a:context_id==?""
-        echo "Error: Missing context id!"
-        return
-    endif
-
-    if a:context_name!=#""
-        echo "Playing ".a:context_name
-    else
-        echo a:context_name
-        echo "error"
-    endif
-
+function! vimbeats#PlayContext(context_id)
     if exists('s:device_id')
         call vimbeats#Run('play', '-d', s:device_id, '-c', a:context_id)
     else
         call vimbeats#Run('play', '-c', a:context_id)
     endif
+
+    " Attempt to print playlist name if context is a playlist
+    let l:PLAYLIST_PREFIX = 'spotify:playlist:'
+    if a:context_id[0:len(l:PLAYLIST_PREFIX)-1] ==# l:PLAYLIST_PREFIX
+        echo "Playing " .. vimbeats#Run('get-playlist', '-c', a:context_id)
+    endif
+
 endfunction
