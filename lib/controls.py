@@ -2,7 +2,6 @@ import requests
 import pprint
 import functools
 
-
 from lib.credentials import CLIENT_ID, CLIENT_SECRET
 from lib.auth import do_refresh_token
 from lib.config import get_refresh_token, save_auth_token
@@ -114,14 +113,49 @@ def get_playlist(token, playlist_id='59nrpzDIGSd5EZ1ApjKRCE'):
     js = send_req().json()
     return Playlist(js['name'], js['description'], js['owner'])
 
+@retry_on_401
+def queue_track(token, track):
+    url = f'https://api.spotify.com/v1/me/player/queue'
+    data = {
+        "uri": track,
+            }
+    return requests.post(url,
+                        headers=add_auth_header(token),
+                        params=data)
+
+@retry_on_401
+def search(token, query, params={}):
+    url = f'https://api.spotify.com/v1/search'
+    params['q'] = query
+    return requests.get(url,
+                        headers=add_auth_header(token),
+                        params=params)
+
+def search_song(token, query):
+    params = {
+            'type': 'track'
+            }
+
+    resp = search(token, query, params)
+    js = resp.json()
+    out = []
+    for track in js['tracks']['items']:
+        name = track['name']
+        artists = [x['name'] for x in track['artists']]
+        album = track['album']
+        uri = track['uri']
+
+        out.append(Song(name, artists, album, uri))
+    return out
+
 def current_song(token):
     resp = get_currently_playing(token)
 
     js = resp.json()
 
     name = js['item']['name']
-
     artists = [x['name'] for x in js['item']['artists']]
     album = js['item']['album']['name']
+    uri = js['item']['uri']
 
     return Song(name, artists, album)

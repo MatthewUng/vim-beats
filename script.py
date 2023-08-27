@@ -15,7 +15,9 @@ COMMANDS = [
         'get-devices',
         'currently-playing',
         'current-song',
-        'get-playlist'
+        'get-playlist',
+        'queue-song',
+        'search'
 ]
 
 def setup_parser():
@@ -23,6 +25,7 @@ def setup_parser():
     parser.add_argument('command', choices=COMMANDS)
     parser.add_argument('-d', '--device_id', default=None)
     parser.add_argument('-c', '--context_uri', default=None)
+    parser.add_argument('-q', '--query', default=None)
     parser.add_argument('--debug', default=None, action='store_true')
     return parser
 
@@ -69,6 +72,15 @@ if __name__ == '__main__':
     elif args.command == 'get-playlist':
         playlist = controls.get_playlist(auth_token, get_playlist_id(args.context_uri))
         print(playlist, end='')
+    elif args.command == 'queue-song':
+        resp = controls.queue_track(auth_token, args.context_uri)
+        if resp.status_code >= 400:
+            print_if_debug(resp.json())
+        print_if_debug(resp.status_code)
+    elif args.command == 'search':
+        resp = controls.search_song(auth_token, args.query)
+        for song in resp:
+            print(f'{str(song)}###{repr(song)}')
     else:
         exit(1)
 
