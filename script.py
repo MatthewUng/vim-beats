@@ -17,7 +17,8 @@ COMMANDS = [
         'current-song',
         'get-playlist',
         'queue-song',
-        'search'
+        'search',
+        'get-playlists'
 ]
 
 def setup_parser():
@@ -70,7 +71,8 @@ if __name__ == '__main__':
         song = controls.current_song(auth_token)
         print(song, end='')
     elif args.command == 'get-playlist':
-        playlist = controls.get_playlist(auth_token, get_playlist_id(args.context_uri))
+        playlist = controls.get_playlist(auth_token)
+#          playlist = controls.get_playlist(auth_token, get_playlist_id(args.context_uri))
         print(playlist, end='')
     elif args.command == 'queue-song':
         resp = controls.queue_track(auth_token, args.context_uri)
@@ -81,6 +83,10 @@ if __name__ == '__main__':
         resp = controls.search_song(auth_token, args.query)
         for song in resp:
             print(f'{str(song)}###{repr(song)}')
+    elif args.command == 'get-playlists':
+        resp = controls.get_playlists(auth_token)
+        for playlist in resp:
+            print(f'{str(playlist)}###{repr(playlist)}')
     else:
         exit(1)
 

@@ -101,7 +101,8 @@ def get_playlist(token, playlist_id='59nrpzDIGSd5EZ1ApjKRCE'):
     FIELDS = [
             'name',
             'description',
-            'owner'
+            'owner',
+            'id'
             ]
 
     @retry_on_401
@@ -111,7 +112,7 @@ def get_playlist(token, playlist_id='59nrpzDIGSd5EZ1ApjKRCE'):
                             params={'fields': ','.join(FIELDS)})
 
     js = send_req().json()
-    return Playlist(js['name'], js['description'], js['owner'])
+    return Playlist(js['name'], js['description'], js['owner']['display_name'], js['id'])
 
 @retry_on_401
 def queue_track(token, track):
@@ -159,3 +160,22 @@ def current_song(token):
     uri = js['item']['uri']
 
     return Song(name, artists, album)
+
+
+def get_playlists(token):
+    @retry_on_401
+    def send_req():
+        url = r'https://api.spotify.com/v1/me/playlists'
+        params = { 'limit': 50}
+        return requests.get(url,
+                            headers=add_auth_header(token),
+                            params = params)
+    resp = send_req().json()
+    out = []
+    for playlist in resp['items']:
+        name = playlist['name']
+        description = playlist['description']
+        owner = playlist['owner']['display_name']
+        id = playlist['id']
+        out.append(Playlist(name, description, owner, id))
+    return out

@@ -15,10 +15,14 @@ class Song:
 
 
 class Playlist:
-    def __init__(self, name, description, owner):
+    def __init__(self, name, description, owner, playlist_id):
         self.name = name
         self.description = description
         self.owner = owner
+        self.playlist_id = playlist_id
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} - {self.owner}"
+
+    def __repr__(self):
+        return self.playlist_id

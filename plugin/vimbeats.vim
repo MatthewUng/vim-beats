@@ -70,7 +70,6 @@ function! vimbeats#ReceiveQueryResults(search_choice)
     echom 'Queued: ' . a:search_choice
 endfunction
 
-
 function! vimbeats#SearchAndQueue(query)
     " clear dictionary
     call filter(s:queue_choices, 0)
@@ -83,4 +82,23 @@ function! vimbeats#SearchAndQueue(query)
     endfor
 
     call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceiveQueryResults')})
+endfunction
+
+" Helper callback method for `SearchAndPlayPlaylists`
+function! vimbeats#ReceivePlaylistQueryResults(search_choice)
+    call vimbeats#PlayContext('spotify:playlist:' .s:queue_choices[a:search_choice])
+endfunction
+
+function! vimbeats#SearchAndPlayPlaylist()
+    " clear dictionary
+    call filter(s:queue_choices, 0)
+
+    let l:resp = vimbeats#Run('get-playlists')
+    let l:songs = split(l:resp, '\n')
+    for song in songs
+        let l:pair = split(song, '###')
+        let s:queue_choices[l:pair[0]] = l:pair[1]
+    endfor
+
+    call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceivePlaylistQueryResults')})
 endfunction
