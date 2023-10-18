@@ -164,18 +164,24 @@ def current_song(token):
 
 def get_playlists(token):
     @retry_on_401
-    def send_req():
+    def send_req(offset=None):
         url = r'https://api.spotify.com/v1/me/playlists'
         params = { 'limit': 50}
+        if offset is not None:
+            params['offset'] = int(offset)
         return requests.get(url,
                             headers=add_auth_header(token),
                             params = params)
-    resp = send_req().json()
+
+    tot = -1
     out = []
-    for playlist in resp['items']:
-        name = playlist['name']
-        description = playlist['description']
-        owner = playlist['owner']['display_name']
-        id = playlist['id']
-        out.append(Playlist(name, description, owner, id))
+    while tot == -1 or len(out) != tot:
+        resp = send_req(offset=len(out)).json()
+        tot = resp['total']
+        for playlist in resp['items']:
+            name = playlist['name']
+            description = playlist['description']
+            owner = playlist['owner']['display_name']
+            id = playlist['id']
+            out.append(Playlist(name, description, owner, id))
     return out
