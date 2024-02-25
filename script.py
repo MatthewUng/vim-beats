@@ -5,7 +5,7 @@ import sys
 from lib.config import get_auth_token
 from lib.utils import get_playlist_id
 import lib.controls as controls
-
+from lib.cache import get_with_ttl, write
 
 COMMANDS = [
         'play',
@@ -84,9 +84,19 @@ if __name__ == '__main__':
         for song in resp:
             print(f'{str(song)}###{repr(song)}')
     elif args.command == 'get-playlists':
+        LOCAL = 'local_playlists'
+        if res := get_with_ttl(LOCAL, 60*60):
+            print(res)
+            exit()
+
+        s = []
         resp = controls.get_playlists(auth_token)
         for playlist in resp:
-            print(f'{str(playlist)}###{repr(playlist)}')
+            s.append(f'{str(playlist)}###{repr(playlist)}')
+
+        contents = '\n'.join(s)
+        write(LOCAL, contents)
+        print(contents)
     else:
         exit(1)
 
