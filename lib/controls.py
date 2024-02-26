@@ -208,3 +208,16 @@ def get_recommendations(token, artists, tracks):
     for track in resp.json()['tracks']:
         out.append(json_to_song(track))
     return out
+
+def get_queue(token):
+    @retry_on_401
+    def send_req():
+        url = 'https://api.spotify.com/v1/me/player/queue'
+        return requests.get(url,
+                            headers=add_auth_header(token))
+    resp = send_req()
+    js = resp.json()
+    out = []
+    for song in js['queue']:
+        out.append(json_to_song(song))
+    return out
