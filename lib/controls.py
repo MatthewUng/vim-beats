@@ -135,7 +135,8 @@ def search(token, query, params={}):
 
 def search_song(token, query):
     params = {
-            'type': 'track'
+            'type': 'track',
+            'limit': 50
             }
 
     resp = search(token, query, params)
