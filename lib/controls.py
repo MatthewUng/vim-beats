@@ -6,6 +6,7 @@ from lib.credentials import CLIENT_ID, CLIENT_SECRET
 from lib.auth import do_refresh_token
 from lib.config import get_refresh_token, save_auth_token
 from lib.api import Song, Playlist
+from lib.json_to_obj import json_to_song, json_to_playlist
 
 
 def retry_on_401(f):
@@ -153,14 +154,9 @@ def current_song(token):
     resp = get_currently_playing(token)
 
     js = resp.json()
+    js_track = js['item']
 
-    name = js['item']['name']
-    artists = [x['name'] for x in js['item']['artists']]
-    album = js['item']['album']['name']
-    uri = js['item']['uri']
-
-    return Song(name, artists, album)
-
+    return json_to_song(js_track)
 
 def get_playlists(token):
     @retry_on_401
@@ -179,9 +175,35 @@ def get_playlists(token):
         resp = send_req(offset=len(out)).json()
         tot = resp['total']
         for playlist in resp['items']:
-            name = playlist['name']
-            description = playlist['description']
-            owner = playlist['owner']['display_name']
-            id = playlist['id']
-            out.append(Playlist(name, description, owner, id))
+            out.append(json_to_playlist(playlist))
+    return out
+
+def get_recommendations(token, artists, tracks):
+    @retry_on_401
+    def send_req():
+        url = r'https://api.spotify.com/v1/recommendations'
+        params = {
+                "seed_tracks": tracks,
+                "limit": 25
+                }
+        if tracks:
+            if type(artists) == list:
+                params['seed_tracks'] = ','.join(tracks)
+            else:
+                params['seed_tracks'] = tracks
+
+        if artists:
+            if type(artists) == list:
+                params['seed_artists'] = ','.join(artists)
+            else:
+                params['seed_artists'] = artists
+
+
+        return requests.get(url,
+                            headers=add_auth_header(token),
+                            params=params)
+    resp = send_req()
+    out = []
+    for track in resp.json()['tracks']:
+        out.append(json_to_song(track))
     return out

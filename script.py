@@ -18,7 +18,8 @@ COMMANDS = [
         'get-playlist',
         'queue-song',
         'search',
-        'get-playlists'
+        'get-playlists',
+        'get-recommendations',
 ]
 
 def setup_parser():
@@ -97,6 +98,10 @@ if __name__ == '__main__':
         contents = '\n'.join(s)
         write(LOCAL, contents)
         print(contents)
+    elif args.command == 'get-recommendations':
+        recs = controls.get_recommendations(auth_token, None, args.context_uri)
+        for song in recs:
+            print(song)
     else:
         exit(1)
 
