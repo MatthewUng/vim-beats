@@ -21,6 +21,7 @@ COMMANDS = [
         'get-playlists',
         'get-recommendations',
         'get-queue',
+        'get-featured-playlists',
 ]
 
 def setup_parser():
@@ -107,6 +108,10 @@ if __name__ == '__main__':
         songs = controls.get_queue(auth_token)
         for song in songs:
             print(song)
+    elif args.command == 'get-featured-playlists':
+        playlists = controls.get_featured_playlists(auth_token)
+        for playlist in playlists:
+            print(f'{str(playlist)}###{repr(playlist)}')
     else:
         exit(1)
 

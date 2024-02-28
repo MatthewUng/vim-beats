@@ -209,6 +209,23 @@ def get_recommendations(token, artists, tracks):
         out.append(json_to_song(track))
     return out
 
+def get_featured_playlists(token):
+    @retry_on_401
+    def send_req():
+        params = {
+            "limit": 50
+        }
+        url = r"https://api.spotify.com/v1/browse/featured-playlists"
+        return requests.get(url, headers=add_auth_header(token), params=params)
+
+    resp = send_req().json()
+    out = []
+    for playlist in resp['playlists']['items']:
+        out.append(json_to_playlist(playlist))
+
+    return out
+
+
 def get_queue(token):
     @retry_on_401
     def send_req():
