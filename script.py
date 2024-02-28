@@ -87,7 +87,7 @@ if __name__ == '__main__':
             print(f'{str(song)}###{repr(song)}')
     elif args.command == 'get-playlists':
         LOCAL = 'local_playlists'
-        if res := get_with_ttl(LOCAL, 60*60):
+        if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
             print(res)
             exit()
 
