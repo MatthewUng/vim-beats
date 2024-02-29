@@ -1,3 +1,9 @@
+from enum import Enum
+
+class SpotifyObj(Enum):
+    TRACK = 1
+    PLAYLIST = 2
+    ARTIST = 3
 
 class Song:
     def __init__(self, name, artists, album, track_id=''):

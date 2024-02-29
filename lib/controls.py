@@ -5,8 +5,9 @@ import functools
 from lib.credentials import CLIENT_ID, CLIENT_SECRET
 from lib.auth import do_refresh_token
 from lib.config import get_refresh_token, save_auth_token
-from lib.api import Song, Playlist
+from lib.api import Song, Playlist, SpotifyObj
 from lib.json_to_obj import json_to_song, json_to_playlist
+import lib.utils as utils
 
 
 def retry_on_401(f):
@@ -179,31 +180,39 @@ def get_playlists(token):
             out.append(json_to_playlist(playlist))
     return out
 
-def get_recommendations(token, artists, tracks):
+def get_recommendations(token, context_uri=None, artists=None, tracks=None):
+    if artists is None:
+        artists = []
+    if tracks is None:
+        tracks = []
+
     @retry_on_401
-    def send_req():
+    def send_req(params):
         url = r'https://api.spotify.com/v1/recommendations'
-        params = {
-                "seed_tracks": tracks,
+
+        params.update({
                 "limit": 25
-                }
-        if tracks:
-            if type(artists) == list:
-                params['seed_tracks'] = ','.join(tracks)
-            else:
-                params['seed_tracks'] = tracks
-
-        if artists:
-            if type(artists) == list:
-                params['seed_artists'] = ','.join(artists)
-            else:
-                params['seed_artists'] = artists
-
+                })
 
         return requests.get(url,
                             headers=add_auth_header(token),
                             params=params)
-    resp = send_req()
+
+    params = {}
+    if context_uri != None:
+        obj = utils.context_uri_to_obj_type(context_uri)
+        if obj == SpotifyObj.TRACK:
+            tracks.append(utils.get_track_id(context_uri))
+        elif obj == SpotifyObj.ARTIST:
+            artists.append(utils.get_artist_id(context_uri))
+
+    if tracks:
+        params['seed_tracks'] = ','.join(tracks)
+
+    if artists:
+        params['seed_artists'] = ','.join(artists)
+
+    resp = send_req(params)
     out = []
     for track in resp.json()['tracks']:
         out.append(json_to_song(track))

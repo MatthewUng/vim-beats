@@ -75,7 +75,6 @@ if __name__ == '__main__':
         print(song, end='')
     elif args.command == 'get-playlist':
         playlist = controls.get_playlist(auth_token)
-#          playlist = controls.get_playlist(auth_token, get_playlist_id(args.context_uri))
         print(playlist, end='')
     elif args.command == 'queue-song':
         resp = controls.queue_track(auth_token, args.context_uri)
@@ -101,7 +100,7 @@ if __name__ == '__main__':
         write(LOCAL, contents)
         print(contents)
     elif args.command == 'get-recommendations':
-        recs = controls.get_recommendations(auth_token, None, args.context_uri)
+        recs = controls.get_recommendations(auth_token, context_uri=args.context_uri)
         for song in recs:
             print(song)
     elif args.command == 'get-queue':
