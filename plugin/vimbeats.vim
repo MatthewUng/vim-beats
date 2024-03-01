@@ -1,6 +1,6 @@
-if exists('g:spotify')
-    finish
-endif
+" if exists('g:spotify')
+"     finish
+" endif
 let g:spotify = 1
 
 let s:script_name = '/script.py'
@@ -78,6 +78,9 @@ function! vimbeats#SearchAndQueue(query)
     let l:songs = split(l:resp, '\n')
     for song in songs
         let l:pair = split(song, '###')
+        if len(l:pair) < 2
+            continue
+        endif
         let s:queue_choices[l:pair[0]] = l:pair[1]
     endfor
 
@@ -97,6 +100,9 @@ function! vimbeats#SearchAndPlayPlaylist()
     let l:songs = split(l:resp, '\n')
     for song in songs
         let l:pair = split(song, '###')
+        if len(l:pair) < 2
+            continue
+        endif
         let s:queue_choices[l:pair[0]] = l:pair[1]
     endfor
 
@@ -111,6 +117,9 @@ function! vimbeats#SearchAndPlaySpotifyPlaylist()
     let l:songs = split(l:resp, '\n')
     for song in songs
         let l:pair = split(song, '###')
+        if len(l:pair) < 2
+            continue
+        endif
         let s:queue_choices[l:pair[0]] = l:pair[1]
     endfor
 
