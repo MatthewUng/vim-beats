@@ -22,7 +22,10 @@ def retry_on_401(f):
 
         resp = f(*args, **kwargs)
         new_args = list(args)
-        new_args[0] = new_access_token
+        if new_args:
+            new_args[0] = new_access_token
+        else:
+            new_args = [new_access_token]
         return f(*new_args, **kwargs)
 
     return wrap
