@@ -102,3 +102,17 @@ function! vimbeats#SearchAndPlayPlaylist()
 
     call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceivePlaylistQueryResults')})
 endfunction
+
+function! vimbeats#SearchAndPlaySpotifyPlaylist()
+    " clear dictionary
+    call filter(s:queue_choices, 0)
+
+    let l:resp = vimbeats#Run('get-featured-playlists')
+    let l:songs = split(l:resp, '\n')
+    for song in songs
+        let l:pair = split(song, '###')
+        let s:queue_choices[l:pair[0]] = l:pair[1]
+    endfor
+
+    call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceivePlaylistQueryResults')})
+endfunction
