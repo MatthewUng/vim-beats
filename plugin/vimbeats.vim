@@ -47,8 +47,8 @@ function! vimbeats#Prev()
 endfunction
 
 function! vimbeats#PlayContext(context_id)
-    if exists('s:device_id')
-        call vimbeats#Run('play', '-d', s:device_id, '-c', a:context_id)
+    if exists('g:SpotifyDeviceID')
+        call vimbeats#Run('play', '-d', g:SpotifyDeviceID, '-c', a:context_id)
     else
         call vimbeats#Run('play', '-c', a:context_id)
     endif

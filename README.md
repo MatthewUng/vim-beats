@@ -11,6 +11,8 @@ client id, client secret, and ask to authorize spotify access
 4. Update your vimrc with your desired macros
 e.g.
 ```
+" ID of device to play.  Influences what device `PlayContext` plays on.
+let g:SpotifyDeviceID = '<device id>'
 nnoremap <silent> <leader>mm :call vimbeats#ToggleSpotify('<device_id>')<cr>
 nnoremap <leader>mj :call vimbeats#Next()<cr>
 nnoremap <leader>mk :call vimbeats#Prev()<cr>
@@ -27,6 +29,3 @@ A: https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
 Q: How do I obtain a device ID?  
 A: Have Spotify running on the target device and try `python3 ./script get-devices`.
 You can find the device id from the printed output
-
-
-
