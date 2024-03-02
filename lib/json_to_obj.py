@@ -9,7 +9,7 @@ def json_to_song(js):
     
 def json_to_playlist(js):
     name = js['name']
-    description = js['description']
+    description = js['description'].strip()
     owner = js['owner']['display_name']
     id = js['id']
     return Playlist(name, description, owner, id)
