@@ -165,7 +165,7 @@ def current_song(token):
 
 def get_playlists(token):
     @retry_on_401
-    def send_req(offset=None):
+    def send_req(token, offset=None):
         url = r'https://api.spotify.com/v1/me/playlists'
         params = { 'limit': 50}
         if offset is not None:
@@ -177,7 +177,7 @@ def get_playlists(token):
     tot = -1
     out = []
     while tot == -1 or len(out) != tot:
-        resp = send_req(offset=len(out)).json()
+        resp = send_req(token, offset=len(out)).json()
         tot = resp['total']
         for playlist in resp['items']:
             out.append(json_to_playlist(playlist))
@@ -190,7 +190,7 @@ def get_recommendations(token, context_uri=None, artists=None, tracks=None):
         tracks = []
 
     @retry_on_401
-    def send_req(params):
+    def send_req(token, params):
         url = r'https://api.spotify.com/v1/recommendations'
 
         params.update({
@@ -215,7 +215,7 @@ def get_recommendations(token, context_uri=None, artists=None, tracks=None):
     if artists:
         params['seed_artists'] = ','.join(artists)
 
-    resp = send_req(params)
+    resp = send_req(token, params)
     out = []
     for track in resp.json()['tracks']:
         out.append(json_to_song(track))
@@ -223,14 +223,14 @@ def get_recommendations(token, context_uri=None, artists=None, tracks=None):
 
 def get_featured_playlists(token):
     @retry_on_401
-    def send_req():
+    def send_req(token):
         params = {
             "limit": 50
         }
         url = r"https://api.spotify.com/v1/browse/featured-playlists"
         return requests.get(url, headers=add_auth_header(token), params=params)
 
-    resp = send_req().json()
+    resp = send_req(token).json()
     out = []
     for playlist in resp['playlists']['items']:
         out.append(json_to_playlist(playlist))
@@ -240,11 +240,11 @@ def get_featured_playlists(token):
 
 def get_queue(token):
     @retry_on_401
-    def send_req():
+    def send_req(token):
         url = 'https://api.spotify.com/v1/me/player/queue'
         return requests.get(url,
                             headers=add_auth_header(token))
-    resp = send_req()
+    resp = send_req(token)
     js = resp.json()
     out = []
     for song in js['queue']:
