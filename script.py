@@ -110,7 +110,7 @@ if __name__ == '__main__':
     elif args.command == 'get-featured-playlists':
         playlists = controls.get_featured_playlists(auth_token)
         for playlist in playlists:
-            print(f'{str(playlist)}###{repr(playlist)}')
+            print(f'{str(playlist)}###{repr(playlist)}###{playlist.description}')
     else:
         exit(1)
 
