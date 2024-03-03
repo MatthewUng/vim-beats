@@ -216,7 +216,8 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
 
     let command = 'cat ' . playlist_file . ' '
     let command .= "| sed -E '" . 's/' . s:PLAYLIST_PATTERN . '/\1/' . "' "
-    let command .= '| fzf --preview="' . s:get_preview_command(l:playlist_file) . '" '
+    let command .= '| fzf --prompt ' . "'Featured>'"
+    let command .= ' --preview="' . s:get_preview_command(l:playlist_file) . '" '
     let command .= " > " . results_file
 
     let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
