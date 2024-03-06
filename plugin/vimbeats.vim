@@ -78,14 +78,14 @@ function! ExecuteTerm(ctx, command) abort
 endfunction
 
 " Produces the run command from an array of arguments
-function s:run_command(arr) abort
+function s:get_run_command(arr) abort
     let l:script = s:plugindir . s:script_name
     let l:cmd =  l:script . ' ' . join(a:arr, ' ')
     return 'python3 '.cmd
 endfunction
 
 function! vimbeats#Run(...) abort
-    let command = s:run_command(a:000)
+    let command = s:get_run_command(a:000)
     let out = system(l:command)
     return l:out
 endfunction
@@ -170,20 +170,21 @@ function! vimbeats#ReceivePlaylistQueryResults(search_choice)
 endfunction
 
 function! vimbeats#SearchAndPlayPlaylist()
-    " clear dictionary
-    call filter(s:queue_choices, 0)
+    let playlist_file = tempname()
+    let results_file = tempname()
 
-    let l:resp = vimbeats#Run('get-playlists')
-    let l:songs = split(l:resp, '\n')
-    for song in songs
-        let l:pair = split(song, '###')
-        if len(l:pair) < 2
-            continue
-        endif
-        let s:queue_choices[l:pair[0]] = l:pair[1]
-    endfor
+    let playlist_command = s:get_run_command(['get-playlists']) . ' > ' . playlist_file
+    call system(l:playlist_command)
 
-    call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceivePlaylistQueryResults')})
+    let command = 'cat ' . playlist_file . ' '
+    let command .= "| python3 " . s:plugindir . '/scripts/playlist_names.py '
+    let command .= '| fzf --border --prompt ' . "'Playlists>'"
+    let command .= ' --preview="' . s:get_preview_command(l:playlist_file) . '" '
+    let command .= " > " . results_file
+
+    let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
+    let ctx['callback'] = function("PlayPlaylistCallback")
+    call ExecuteTerm(l:ctx, l:command)
 endfunction
 
 
@@ -213,7 +214,7 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
     let playlist_file = tempname()
     let results_file = tempname()
 
-    let playlist_command = s:run_command(['get-featured-playlists']) . ' > ' . playlist_file
+    let playlist_command = s:get_run_command(['get-featured-playlists']) . ' > ' . playlist_file
     call system(l:playlist_command)
 
     let command = 'cat ' . playlist_file . ' '

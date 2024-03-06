@@ -95,10 +95,20 @@ if __name__ == '__main__':
                 print(res)
                 exit()
 
+        playlists = controls.get_playlists(auth_token)
+        with ThreadPoolExecutor(max_workers=50) as executor:
+            futures = []
+            for playlist in playlists:
+                futures.append(
+                    executor.submit(lambda p: controls.populate_playlist_tracks(auth_token, p), playlist)
+                )
+
+            for f in futures:
+                f.result()
+
         s = []
-        resp = controls.get_playlists(auth_token)
-        for playlist in resp:
-            s.append(f'{str(playlist)}###{repr(playlist)}')
+        for playlist in playlists:
+            s.append(playlist.serialize())
 
         contents = '\n'.join(s)
         write(LOCAL, contents)
