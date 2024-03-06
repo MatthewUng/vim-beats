@@ -101,8 +101,9 @@ def set_volume(token, volume_percent):
                         headers=add_auth_header(token),
                         params=data)
 
-def get_playlist(token, playlist_id='59nrpzDIGSd5EZ1ApjKRCE'):
-    url = f'https://api.spotify.com/v1/playlists/{playlist_id}'
+def get_playlist(token, playlist_id):
+    id = utils.get_playlist_id(playlist_id)
+    url = f'https://api.spotify.com/v1/playlists/{id}'
     FIELDS = [
             'name',
             'description',

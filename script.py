@@ -77,8 +77,8 @@ if __name__ == '__main__':
         song = controls.current_song(auth_token)
         print(song, end='')
     elif args.command == 'get-playlist':
-        playlist = controls.get_playlist(auth_token)
-        print(playlist.serialize(), end='')
+        playlist = controls.get_playlist(auth_token, args.context_uri)
+        print(playlist, end='')
     elif args.command == 'queue-song':
         resp = controls.queue_track(auth_token, args.context_uri)
         if resp.status_code >= 400:

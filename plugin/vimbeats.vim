@@ -132,7 +132,8 @@ function! vimbeats#PlayContext(context_id)
     " Attempt to print playlist name if context is a playlist
     let l:PLAYLIST_PREFIX = 'spotify:playlist:'
     if a:context_id[0:len(l:PLAYLIST_PREFIX)-1] ==# l:PLAYLIST_PREFIX
-        echo "Playing " . vimbeats#Run('get-playlist', '-c', a:context_id)
+        let id = a:context_id[len(l:PLAYLIST_PREFIX):]
+        echom "Playing " . vimbeats#Run('get-playlist', '-c', a:context_id)
     endif
 endfunction
 
@@ -200,7 +201,7 @@ function! PlayPlaylistCallback(ctx)
     let playlist_name = readfile(l:results_file)[0]
 
     let command = 'grep ' . "'" . playlist_name . "'" . ' ' . playlist_file
-    let command .= ' | sed -E ' . "'s/" . s:PLAYLIST_PATTERN . '/\2/' . "'"
+    let command .= ' | python3 ' . s:plugindir . '/scripts/playlist_id.py'
 
     let playlist_id = trim(system(command))
     let id = 'spotify:playlist:' . playlist_id
