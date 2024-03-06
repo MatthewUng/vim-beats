@@ -107,17 +107,19 @@ def get_playlist(token, playlist_id='59nrpzDIGSd5EZ1ApjKRCE'):
             'name',
             'description',
             'owner',
-            'id'
+            'id',
+            'href',
+            'tracks.items(track(artists,album(name),id,href,name,uri))'
             ]
 
     @retry_on_401
-    def send_req():
+    def send_req(token):
         return requests.get(url,
                             headers=add_auth_header(token),
                             params={'fields': ','.join(FIELDS)})
 
-    js = send_req().json()
-    return Playlist(js['name'], js['description'], js['owner']['display_name'], js['id'])
+    js = send_req(token).json()
+    return json_to_playlist(js)
 
 @retry_on_401
 def queue_track(token, track):

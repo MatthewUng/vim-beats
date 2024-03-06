@@ -24,11 +24,18 @@ class Song:
 
 
 class Playlist:
-    def __init__(self, name, description, owner, playlist_id):
+    def __init__(self, name, description, owner, playlist_id, href):
+        # required
         self.name = name
         self.description = description
         self.owner = owner
         self.playlist_id = playlist_id
+        self.href = href
+
+        # optional
+        self.tracks_href = None
+        self.total_tracks = None
+        self.tracks = []
 
     def spotify_uri(self):
         return f'spotify:playlist:{self.track_id}'
