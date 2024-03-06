@@ -30,6 +30,7 @@ def setup_parser():
     parser.add_argument('-d', '--device_id', default=None)
     parser.add_argument('-c', '--context_uri', default=None)
     parser.add_argument('-q', '--query', default=None)
+    parser.add_argument('--no-cache', default=False, action='store_true')
     parser.add_argument('--debug', default=None, action='store_true')
     return parser
 
@@ -87,9 +88,10 @@ if __name__ == '__main__':
             print(f'{str(song)}###{repr(song)}')
     elif args.command == 'get-playlists':
         LOCAL = 'local_playlists'
-        if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
-            print(res)
-            exit()
+        if not args.no_cache:
+            if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
+                print(res)
+                exit()
 
         s = []
         resp = controls.get_playlists(auth_token)
@@ -108,9 +110,20 @@ if __name__ == '__main__':
         for song in songs:
             print(song)
     elif args.command == 'get-featured-playlists':
+        LOCAL = 'featured_playlists'
+        if not args.no_cache:
+            if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
+                print(res)
+                exit()
+
+        s = []
         playlists = controls.get_featured_playlists(auth_token)
         for playlist in playlists:
-            print(f'{str(playlist)}###{repr(playlist)}###{playlist.description}')
+            s.append(f'{str(playlist)}###{repr(playlist)}###{playlist.description}')
+
+        contents = '\n'.join(s)
+        write(LOCAL, contents)
+        print(contents)
     else:
         exit(1)
 
