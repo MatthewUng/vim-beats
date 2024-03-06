@@ -7,6 +7,8 @@ from lib.utils import get_playlist_id
 import lib.controls as controls
 from lib.cache import get_with_ttl, write
 
+from concurrent.futures import ThreadPoolExecutor
+
 COMMANDS = [
         'play',
         'pause',
@@ -76,7 +78,7 @@ if __name__ == '__main__':
         print(song, end='')
     elif args.command == 'get-playlist':
         playlist = controls.get_playlist(auth_token)
-        print(playlist, end='')
+        print(playlist.serialize(), end='')
     elif args.command == 'queue-song':
         resp = controls.queue_track(auth_token, args.context_uri)
         if resp.status_code >= 400:
@@ -116,10 +118,21 @@ if __name__ == '__main__':
                 print(res)
                 exit()
 
-        s = []
         playlists = controls.get_featured_playlists(auth_token)
-        for playlist in playlists:
-            s.append(f'{str(playlist)}###{repr(playlist)}###{playlist.description}')
+
+        with ThreadPoolExecutor(max_workers=50) as executor:
+            futures = []
+            for playlist in playlists:
+                futures.append(
+                    executor.submit(lambda p: controls.populate_playlist_tracks(auth_token, p), playlist)
+                )
+
+            for f in futures:
+                f.result()
+
+        s = []
+        for p in playlists:
+            s.append(p.serialize())
 
         contents = '\n'.join(s)
         write(LOCAL, contents)

@@ -10,7 +10,8 @@ let s:queue_choices = {}
 let s:PLAYLIST_PATTERN = '(.+)###(.+)###(.+)'
 
 function s:get_preview_command(fname)
-    return 'grep {} ' . a:fname . " | sed -E 's/" . '(.+)###(.+)###(.+)/\3/' . "'"
+    let preview_py = s:plugindir . '/scripts/playlist_preview.py'
+    return 'grep {} ' . a:fname . " | python3 " . l:preview_py
 endfunction
 
 function! s:getpos()
@@ -215,7 +216,7 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
     call system(l:playlist_command)
 
     let command = 'cat ' . playlist_file . ' '
-    let command .= "| sed -E '" . 's/' . s:PLAYLIST_PATTERN . '/\1/' . "' "
+    let command .= "| python3 " . s:plugindir . '/scripts/playlist_names.py '
     let command .= '| fzf --border --prompt ' . "'Featured>'"
     let command .= ' --preview="' . s:get_preview_command(l:playlist_file) . '" '
     let command .= " > " . results_file

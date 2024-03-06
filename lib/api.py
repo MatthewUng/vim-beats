@@ -40,6 +40,20 @@ class Playlist:
     def spotify_uri(self):
         return f'spotify:playlist:{self.track_id}'
 
+
+    # pass information about playlist in a single line to be used by other applications
+    def serialize(self):
+        s = [
+                self.name,
+                self.owner,
+                self.playlist_id,
+                self.description,
+            ]
+
+        for track in self.tracks:
+            s.append(str(track))
+        return '###'.join(s)
+
     def __str__(self):
         return f"{self.name} - {self.owner}"
 

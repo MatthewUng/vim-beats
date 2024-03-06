@@ -252,3 +252,19 @@ def get_queue(token):
     for song in js['queue']:
         out.append(json_to_song(song))
     return out
+
+def populate_playlist_tracks(token, playlist):
+    @retry_on_401
+    def send_req(token):
+        url = playlist.tracks_href
+        return requests.get(url, headers=add_auth_header(token))
+
+    if playlist.tracks: return
+
+    resp = send_req(token)
+    for track in resp.json()['items']:
+        try:
+            playlist.tracks.append(json_to_song(track['track']))
+        # Spotify returns non sensical results sometimes
+        except Exception as e:
+            pass
