@@ -24,6 +24,8 @@ COMMANDS = [
         'get-recommendations',
         'get-queue',
         'get-featured-playlists',
+        'add-tracks',
+        'delete-tracks'
 ]
 
 def setup_parser():
@@ -32,6 +34,7 @@ def setup_parser():
     parser.add_argument('-d', '--device_id', default=None)
     parser.add_argument('-c', '--context_uri', default=None)
     parser.add_argument('-q', '--query', default=None)
+    parser.add_argument('--tracks',  nargs='+', default=[])
     parser.add_argument('--no-cache', default=False, action='store_true')
     parser.add_argument('--debug', default=None, action='store_true')
     return parser
@@ -147,6 +150,10 @@ if __name__ == '__main__':
         contents = '\n'.join(s)
         write(LOCAL, contents)
         print(contents)
+    elif args.command == 'add-tracks':
+        controls.save_tracks(auth_token, args.tracks)
+    elif args.command == 'delete-tracks':
+        controls.remove_saved_tracks(auth_token, args.tracks)
     else:
         exit(1)
 

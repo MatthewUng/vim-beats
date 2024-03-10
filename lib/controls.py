@@ -269,3 +269,26 @@ def populate_playlist_tracks(token, playlist):
         # Spotify returns non sensical results sometimes
         except Exception as e:
             pass
+
+def save_tracks(token, track_ids):
+    if not track_ids: return
+
+    @retry_on_401
+    def send_req(token):
+        url = 'https://api.spotify.com/v1/me/tracks'
+        return requests.put(url, headers=add_auth_header(token), json=track_ids)
+
+    resp = send_req(token)
+    return resp.status_code
+
+
+def remove_saved_tracks(token, track_ids):
+    if not track_ids: return
+
+    @retry_on_401
+    def send_req(token):
+        url = 'https://api.spotify.com/v1/me/tracks'
+        return requests.delete(url, headers=add_auth_header(token), json=track_ids)
+
+    resp = send_req(token)
+    return resp.status_code
