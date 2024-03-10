@@ -51,7 +51,7 @@ function! s:create_popup(opts) abort
   call setwinvar(win, '&colorcolumn', '')
 endfunction
 
-function! ExecuteTerm(ctx, command) abort
+function! s:execute_cmd_in_term(ctx, command) abort
   let winrest = winrestcmd()
   let pbuf = bufnr('')
   let ppos = s:getpos()
@@ -187,7 +187,7 @@ function! vimbeats#SearchAndPlayPlaylist()
 
     let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
     let ctx['callback'] = function("PlayPlaylistCallback")
-    call ExecuteTerm(l:ctx, l:command)
+    call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
 
@@ -228,5 +228,5 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
 
     let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
     let ctx['callback'] = function("PlayPlaylistCallback")
-    call ExecuteTerm(l:ctx, l:command)
+    call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
