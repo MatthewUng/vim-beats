@@ -7,8 +7,6 @@ let s:script_name = '/script.py'
 let s:plugindir = expand('<sfile>:p:h:h')
 let s:queue_choices = {}
 
-let s:PLAYLIST_PATTERN = '(.+)###(.+)###(.+)'
-
 function s:get_preview_command(fname)
     let preview_py = s:plugindir . '/scripts/playlist_preview.py'
     return 'grep {} ' . a:fname . " | python3 " . l:preview_py

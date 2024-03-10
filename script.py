@@ -37,6 +37,7 @@ def setup_parser():
     parser.add_argument('--tracks',  nargs='+', default=[])
     parser.add_argument('--no-cache', default=False, action='store_true')
     parser.add_argument('--debug', default=None, action='store_true')
+    parser.add_argument('--json', default=False, action='store_true')
     return parser
 
 def print_if_debug(*print_args, **print_kwargs):
@@ -78,7 +79,10 @@ if __name__ == '__main__':
         pprint.pprint(resp.json())
     elif args.command == 'current-song':
         song = controls.current_song(auth_token)
-        print(song, end='')
+        if args.json:
+            print(song.json(), end='')
+        else:
+            print(song, end='')
     elif args.command == 'get-playlist':
         playlist = controls.get_playlist(auth_token, args.context_uri)
         print(playlist, end='')

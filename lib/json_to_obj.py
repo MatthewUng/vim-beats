@@ -4,8 +4,10 @@ def json_to_song(js):
     name = js['name']
     artists = [x['name'] for x in js['artists']]
     album = js['album']['name']
-    uri = js['uri']
-    return Song(name, artists, album)
+    id = js['id']
+
+    out = Song(name, artists, album, id)
+    return out
     
 def json_to_playlist(js):
     name = js['name']

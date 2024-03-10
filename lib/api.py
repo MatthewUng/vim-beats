@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 
 class SpotifyObj(Enum):
     TRACK = 1
@@ -6,7 +7,7 @@ class SpotifyObj(Enum):
     ARTIST = 3
 
 class Song:
-    def __init__(self, name, artists, album, track_id=''):
+    def __init__(self, name, artists, album, track_id):
         self.name = name
         self.artists = artists
         self.album = album
@@ -15,12 +16,25 @@ class Song:
     def spotify_uri(self):
         return f'spotify:track:{self.track_id}'
 
-    def __str__(self):
+    def json(self):
+        js = {
+            'name': self.name,
+            'artists': self.artists,
+            'display_name': self._display_name(),
+            'album': self.album,
+            'id': self.track_id
+        }
+        return json.dumps(js)
+
+    def _display_name(self):
         artists = ', '.join(self.artists)
         return f"{self.name} - {artists}"
 
+    def __str__(self):
+        return self._display_name()
+
     def __repr__(self):
-        return self.track_id
+        return self.spotify_uri()
 
 
 class Playlist:
@@ -38,7 +52,7 @@ class Playlist:
         self.tracks = []
 
     def spotify_uri(self):
-        return f'spotify:playlist:{self.track_id}'
+        return f'spotify:playlist:{self.playlist_id}'
 
 
     # pass information about playlist in a single line to be used by other applications
