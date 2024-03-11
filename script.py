@@ -155,9 +155,13 @@ if __name__ == '__main__':
         write(LOCAL, contents)
         print(contents)
     elif args.command == 'add-tracks':
-        controls.save_tracks(auth_token, args.tracks)
+        success = controls.save_tracks(auth_token, args.tracks)
+        if not success:
+            exit(1)
     elif args.command == 'delete-tracks':
-        controls.remove_saved_tracks(auth_token, args.tracks)
+        success = controls.remove_saved_tracks(auth_token, args.tracks)
+        if not success:
+            exit(1)
     else:
         exit(1)
 

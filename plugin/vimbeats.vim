@@ -228,3 +228,21 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
     let ctx['callback'] = function("PlayPlaylistCallback")
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
+
+function! vimbeats#AddCurrentSongToLiked()
+    let playlist_file = tempname()
+    let playlist_cmd = s:get_run_command(['current-song', '--json']) . ' > ' . playlist_file
+    call system(l:playlist_cmd)
+
+    let id_command = 'jq -r .id' . ' < ' . l:playlist_file
+    let id = trim(system(l:id_command))
+    let display_name_command = 'jq -r .display_name' . ' < ' . l:playlist_file
+    let display_name = trim(system(l:display_name_command))
+
+    call vimbeats#Run('add-tracks', '--tracks', l:id)
+    if v:shell_error == 0
+        echom("Added current song to liked: " . display_name)
+    else
+        echom("An error occurred")
+    endif
+endfunction

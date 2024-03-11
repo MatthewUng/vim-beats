@@ -279,7 +279,7 @@ def save_tracks(token, track_ids):
         return requests.put(url, headers=add_auth_header(token), json=track_ids)
 
     resp = send_req(token)
-    return resp.status_code
+    return resp.ok
 
 
 def remove_saved_tracks(token, track_ids):
@@ -291,4 +291,4 @@ def remove_saved_tracks(token, track_ids):
         return requests.delete(url, headers=add_auth_header(token), json=track_ids)
 
     resp = send_req(token)
-    return resp.status_code
+    return resp.ok
