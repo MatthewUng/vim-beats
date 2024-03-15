@@ -197,7 +197,7 @@ function! PlayPlaylistCallback(ctx)
 
     let playlist_name = readfile(l:results_file)[0]
 
-    let command = "jq --raw-output0 '.[] | select(.name==\"" . playlist_name . "\") | .id'"
+    let command = "jq -r '.[] | select(.name==\"" . playlist_name . "\") | .id'"
     let command .= " < " . playlist_file
 
     let playlist_id = trim(system(command))
