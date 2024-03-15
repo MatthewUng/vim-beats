@@ -16,7 +16,8 @@ class Song:
     def spotify_uri(self):
         return f'spotify:track:{self.track_id}'
 
-    def json(self):
+
+    def json_dict(self):
         js = {
             'name': self.name,
             'artists': self.artists,
@@ -24,7 +25,15 @@ class Song:
             'album': self.album,
             'id': self.track_id
         }
-        return json.dumps(js)
+        return js
+
+    def json(self):
+        return json.dumps(self.json_dict())
+
+    @staticmethod
+    def load_json(js):
+        return Song(js['name'], js['artists'], js['album'], js['id'])
+
 
     def _display_name(self):
         artists = ', '.join(self.artists)
@@ -42,6 +51,7 @@ class Playlist:
         # required
         self.name = name
         self.description = description
+
         self.owner = owner
         self.playlist_id = playlist_id
         self.href = href
@@ -53,6 +63,34 @@ class Playlist:
 
     def spotify_uri(self):
         return f'spotify:playlist:{self.playlist_id}'
+
+    def _display_name(self):
+        return f'{self.name} ~ {self.owner}'
+
+    def json_dict(self):
+        js = {
+            'name': self.name,
+            'display_name': self._display_name(),
+            'description': self.description,
+            'owner': self.owner,
+            'id': self.playlist_id,
+            'href': self.href,
+            'tracks': []
+        }
+        for track in self.tracks:
+            js['tracks'].append(track.json_dict())
+        return js
+
+    def json(self):
+        return json.dumps(self.json_dict())
+
+    @staticmethod
+    def load_json(js):
+        p = Playlist(js['name'], js['description'], js['owner'], js['id'], js['href'])
+        for track in js.get('track', []):
+            p.tracks.append(Song.load_json(track))
+
+        return p
 
 
     # pass information about playlist in a single line to be used by other applications

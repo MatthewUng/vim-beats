@@ -1,7 +1,7 @@
-if exists('g:spotify')
-    finish
-endif
-let g:spotify = 1
+" if exists('g:spotify')
+"     finish
+" endif
+" let g:spotify = 1
 
 let s:script_name = '/script.py'
 let s:plugindir = expand('<sfile>:p:h:h')

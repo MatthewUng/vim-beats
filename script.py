@@ -85,7 +85,21 @@ if __name__ == '__main__':
             print(song, end='')
     elif args.command == 'get-playlist':
         playlist = controls.get_playlist(auth_token, args.context_uri)
-        print(playlist, end='')
+        if not args.json:
+            print(playlist, '')
+
+        FILE_KEY = playlist.playlist_id
+        if not args.no_cache:
+            if res := get_with_ttl(FILE_KEY, ttl_seconds=60*60):
+                print(res)
+                exit()
+
+            controls.populate_playlist_tracks
+
+        contents = playlist.json()
+        write(FILE_KEY, contents)
+        print(contents)
+
     elif args.command == 'queue-song':
         resp = controls.queue_track(auth_token, args.context_uri)
         if resp.status_code >= 400:
