@@ -9,7 +9,7 @@ let s:queue_choices = {}
 
 function s:get_preview_command(fname)
     let preview_py = s:plugindir . '/scripts/playlist_preview.py'
-    return 'grep {} ' . a:fname . " | python3 " . l:preview_py
+    return 'python3 ' . l:preview_py . ' ' . a:fname . ' {}'
 endfunction
 
 function! s:getpos()
@@ -197,8 +197,8 @@ function! PlayPlaylistCallback(ctx)
 
     let playlist_name = readfile(l:results_file)[0]
 
-    let command = 'grep ' . "'" . playlist_name . "'" . ' ' . playlist_file
-    let command .= ' | python3 ' . s:plugindir . '/scripts/playlist_id.py'
+    let command = "jq --raw-output0 '.[] | select(.name==\"" . playlist_name . "\") | .id'"
+    let command .= " < " . playlist_file
 
     let playlist_id = trim(system(command))
     let id = 'spotify:playlist:' . playlist_id

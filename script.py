@@ -1,6 +1,7 @@
 import argparse
 import pprint
 import sys
+import json
 
 from lib.config import get_auth_token
 from lib.utils import get_playlist_id
@@ -108,29 +109,20 @@ if __name__ == '__main__':
         for song in resp:
             print(f'{str(song)}###{repr(song)}')
     elif args.command == 'get-playlists':
-        LOCAL = 'local_playlists'
+        FILE_KEY = 'local_playlists'
         if not args.no_cache:
-            if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
+            if res := get_with_ttl(FILE_KEY, ttl_seconds=60*60):
                 print(res)
                 exit()
 
         playlists = controls.get_playlists(auth_token)
-        with ThreadPoolExecutor(max_workers=50) as executor:
-            futures = []
-            for playlist in playlists:
-                futures.append(
-                    executor.submit(lambda p: controls.populate_playlist_tracks(auth_token, p), playlist)
-                )
-
-            for f in futures:
-                f.result()
 
         s = []
         for playlist in playlists:
-            s.append(playlist.serialize())
+            s.append(playlist.json_dict())
 
-        contents = '\n'.join(s)
-        write(LOCAL, contents)
+        contents = json.dumps(s)
+        write(FILE_KEY, contents)
         print(contents)
     elif args.command == 'get-recommendations':
         recs = controls.get_recommendations(auth_token, context_uri=args.context_uri)
@@ -141,30 +133,20 @@ if __name__ == '__main__':
         for song in songs:
             print(song)
     elif args.command == 'get-featured-playlists':
-        LOCAL = 'featured_playlists'
+        FILE_KEY = 'featured_playlists'
         if not args.no_cache:
-            if res := get_with_ttl(LOCAL, ttl_seconds=60*60):
+            if res := get_with_ttl(FILE_KEY, ttl_seconds=60*60):
                 print(res)
                 exit()
 
         playlists = controls.get_featured_playlists(auth_token)
 
-        with ThreadPoolExecutor(max_workers=50) as executor:
-            futures = []
-            for playlist in playlists:
-                futures.append(
-                    executor.submit(lambda p: controls.populate_playlist_tracks(auth_token, p), playlist)
-                )
-
-            for f in futures:
-                f.result()
-
         s = []
-        for p in playlists:
-            s.append(p.serialize())
+        for playlist in playlists:
+            s.append(playlist.json_dict())
 
-        contents = '\n'.join(s)
-        write(LOCAL, contents)
+        contents = json.dumps(s)
+        write(FILE_KEY, contents)
         print(contents)
     elif args.command == 'add-tracks':
         success = controls.save_tracks(auth_token, args.tracks)

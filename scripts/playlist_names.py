@@ -1,10 +1,9 @@
 import sys
+import json
 
-# On input the serialized version of a playlist from stdin
-# returns the preview to stdout
+s = input()
+js = json.loads(s)
 
-for line in sys.stdin:
-    v = line.split('###')
-    name = v[0]
+for playlist in js:
+    print(playlist['name'])
 
-    print(name)
