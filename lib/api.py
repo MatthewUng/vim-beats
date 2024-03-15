@@ -16,7 +16,6 @@ class Song:
     def spotify_uri(self):
         return f'spotify:track:{self.track_id}'
 
-
     def json_dict(self):
         js = {
             'name': self.name,

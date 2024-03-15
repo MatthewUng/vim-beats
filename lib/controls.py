@@ -150,12 +150,7 @@ def search_song(token, query):
     js = resp.json()
     out = []
     for track in js['tracks']['items']:
-        name = track['name']
-        artists = [x['name'] for x in track['artists']]
-        album = track['album']
-        uri = track['uri']
-
-        out.append(Song(name, artists, album, uri))
+        out.append(json_to_song(track))
     return out
 
 def current_song(token):
