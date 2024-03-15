@@ -165,11 +165,6 @@ function! vimbeats#SearchAndQueue(query)
     call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceiveQueryResults')})
 endfunction
 
-" Helper callback method for `SearchAndPlayPlaylists`
-function! vimbeats#ReceivePlaylistQueryResults(search_choice)
-    call vimbeats#PlayContext('spotify:playlist:' . s:queue_choices[a:search_choice])
-endfunction
-
 function! vimbeats#SearchAndPlayPlaylist()
     let playlist_file = tempname()
     let results_file = tempname()

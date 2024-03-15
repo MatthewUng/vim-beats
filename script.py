@@ -94,8 +94,6 @@ if __name__ == '__main__':
                 print(res)
                 exit()
 
-            controls.populate_playlist_tracks
-
         contents = playlist.json()
         write(FILE_KEY, contents)
         print(contents)
