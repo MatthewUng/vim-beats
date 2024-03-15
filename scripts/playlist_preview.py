@@ -15,7 +15,7 @@ for playlist in js:
     if playlist['name'] == playlist_name:
 
         id = playlist['id']
-        cmd = f'python3 ./script.py get-playlist -c \'spotify:playlist:{id}\' --json'
+        cmd = f'python3 script.py get-playlist -c \'spotify:playlist:{id}\' --json'
         process = subprocess.run([cmd], capture_output=True, shell=True)
 
         decoded = process.stdout.decode('utf-8')
