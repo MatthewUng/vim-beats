@@ -7,6 +7,13 @@ let s:script_name = '/script.py'
 let s:plugindir = expand('<sfile>:p:h:h')
 let s:queue_choices = {}
 
+" escape strings for playlist/song names with quotes
+function s:escape_string(str)
+    let out = substitute(a:str, '"', '\\\\"', 'g')
+    let out = substitute(l:out, "'", "\\\\'", 'g')
+    return out
+endfunction
+
 function s:get_preview_command(fname)
     let preview_py = s:plugindir . '/scripts/playlist_preview.py'
     return 'python3 ' . l:preview_py . ' ' . a:fname . ' {}'
@@ -197,7 +204,7 @@ function! PlayPlaylistCallback(ctx)
 
     let playlist_name = readfile(l:results_file)[0]
 
-    let command = "jq -r '.[] | select(.name==\"" . playlist_name . "\") | .id'"
+    let command = "jq -r $'.[] | select(.name==\"" . s:escape_string(playlist_name) . "\") | .id'"
     let command .= " < " . playlist_file
 
     let playlist_id = trim(system(command))
