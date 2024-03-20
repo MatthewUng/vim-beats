@@ -1,6 +1,3 @@
-# On input the serialized version of a playlist from stdin
-# returns the preview to stdout
-
 import sys
 import subprocess
 import json
