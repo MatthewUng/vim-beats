@@ -8,8 +8,6 @@ from lib.utils import get_playlist_id
 import lib.controls as controls
 from lib.cache import get_with_ttl, write
 
-from concurrent.futures import ThreadPoolExecutor
-
 COMMANDS = [
         'play',
         'pause',
