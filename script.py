@@ -88,6 +88,7 @@ if __name__ == '__main__':
         playlist = controls.get_playlist(auth_token, args.context_uri)
         if not args.json:
             print(playlist, '')
+            exit()
 
         FILE_KEY = playlist.playlist_id
         if not args.no_cache:
