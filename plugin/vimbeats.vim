@@ -148,7 +148,7 @@ function! vimbeats#Queue(track_id)
     call vimbeats#Run('queue-song -c ' . a:track_id)
 endfunction
 
-function! vimbeats#SearchAndQueue(query)
+function! vimbeats#SearchAndQueueTrack(query)
     let query_results = tempname()
     let results_file = tempname()
 
@@ -164,13 +164,13 @@ function! vimbeats#SearchAndQueue(query)
     let command .= '| fzf --border --prompt ' . "'Search>'"
     let command .= " > " . l:results_file
     let ctx = {'results_file': l:results_file, 'song_file': l:query_results}
-    let ctx['callback'] = function("QueueSongCallback")
+    let ctx['callback'] = function("s:queue_song_callback")
 
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
 " Select and play a playlist among current playlists
-function! vimbeats#SearchAndPlayPlaylist()
+function! vimbeats#SelectAndPlayPlaylist()
     let playlist_file = tempname()
     let results_file = tempname()
 
@@ -184,7 +184,7 @@ function! vimbeats#SearchAndPlayPlaylist()
     let command .= " > " . results_file
 
     let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
-    let ctx['callback'] = function("PlayPlaylistCallback")
+    let ctx['callback'] = function("s:play_playlist_callback")
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
@@ -192,7 +192,7 @@ endfunction
 " ctx is a dictionary with two fields
 "  * "song_file"  - the path of the file for all songs
 "  * "results_file" - the path of the file for the chosen selection
-function! QueueSongCallback(ctx)
+function! s:queue_song_callback(ctx)
     let song_file = a:ctx['song_file']
     let results_file = a:ctx['results_file']
     if getfsize(l:results_file) == 0
@@ -219,7 +219,7 @@ endfunction
 " ctx is a dictionary with two fields
 "  * "playlist_file"  - the path of the file for all playlists
 "  * "results_file" - the path of the file for the chosen selection
-function! PlayPlaylistCallback(ctx)
+function! s:play_playlist_callback(ctx)
     let playlist_file = a:ctx['playlist_file']
     let results_file = a:ctx['results_file']
     if getfsize(l:results_file) == 0
@@ -237,7 +237,7 @@ function! PlayPlaylistCallback(ctx)
     call vimbeats#PlayContext(id)
 endfunction
 
-function! vimbeats#SearchAndPlayFeaturedPlaylist()
+function! vimbeats#SelectAndPlayFeaturedPlaylist()
     let playlist_file = tempname()
     let results_file = tempname()
 
@@ -251,7 +251,7 @@ function! vimbeats#SearchAndPlayFeaturedPlaylist()
     let command .= " > " . results_file
 
     let ctx = {'results_file': results_file, 'playlist_file': playlist_file}
-    let ctx['callback'] = function("PlayPlaylistCallback")
+    let ctx['callback'] = function("s:play_playlist_callback")
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
