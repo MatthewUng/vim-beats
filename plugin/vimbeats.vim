@@ -158,11 +158,15 @@ function! vimbeats#SearchAndQueueTrack(query)
                 \"'" . s:escape_string(a:query) . "'"]) . ' > ' . l:query_results
     call system(l:playlist_command)
 
-"     let command .= ' --preview="' . s:get_preview_command(l:playlist_file) . '" '
-    let command = 'cat ' . l:query_results . ' '
-    let command .= "| python3 " . s:plugindir . '/scripts/track_names.py '
-    let command .= '| fzf --border --prompt ' . "'Search>'"
+    let command = 'cat ' . l:query_results
+    let command .= " | python3 " . s:plugindir . '/scripts/track_names.py '
+    let command .= ' | fzf --border --prompt ' . "'Search>'"
+    let command .= ' --header "CTRL-r to Query Again"'
+    let command .= " --bind 'ctrl-r:reload("
+    let command .= s:plugindir . "/scripts/reload_query.sh {q} " . l:query_results
+    let command .= ")'"
     let command .= " > " . l:results_file
+
     let ctx = {'results_file': l:results_file, 'song_file': l:query_results}
     let ctx['callback'] = function("s:queue_song_callback")
 
