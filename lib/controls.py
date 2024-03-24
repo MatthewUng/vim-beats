@@ -147,6 +147,7 @@ def search_song(token, query):
             }
 
     resp = search(token, query, params)
+
     js = resp.json()
     out = []
     for track in js['tracks']['items']:

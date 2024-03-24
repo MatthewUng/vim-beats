@@ -5,7 +5,6 @@ let g:spotify = 1
 
 let s:script_name = '/script.py'
 let s:plugindir = expand('<sfile>:p:h:h')
-let s:queue_choices = {}
 
 " escape strings for playlist/song names with quotes
 function s:escape_string(str)
@@ -149,29 +148,28 @@ function! vimbeats#Queue(track_id)
     call vimbeats#Run('queue-song -c ' . a:track_id)
 endfunction
 
-" Helper callback method for `SearchAndQueue`
-function! vimbeats#ReceiveQueryResults(search_choice)
-    call vimbeats#Queue(s:queue_choices[a:search_choice])
-    echom 'Queued: ' . a:search_choice
-endfunction
-
 function! vimbeats#SearchAndQueue(query)
-    " clear dictionary
-    call filter(s:queue_choices, 0)
+    let query_results = tempname()
+    let results_file = tempname()
 
-    let l:resp = vimbeats#Run(" search --query '" . a:query . "'")
-    let l:songs = split(l:resp, '\n')
-    for song in songs
-        let l:pair = split(song, '###')
-        if len(l:pair) < 2
-            continue
-        endif
-        let s:queue_choices[l:pair[0]] = l:pair[1]
-    endfor
+    let playlist_command = s:get_run_command([
+                \'search',
+                \'--query',
+                \"'" . s:escape_string(a:query) . "'"]) . ' > ' . l:query_results
+    call system(l:playlist_command)
 
-    call fzf#run({'source': s:queue_choices->keys(), 'window': {'width': 0.9, 'height': 0.6}, 'sink': function('vimbeats#ReceiveQueryResults')})
+"     let command .= ' --preview="' . s:get_preview_command(l:playlist_file) . '" '
+    let command = 'cat ' . l:query_results . ' '
+    let command .= "| python3 " . s:plugindir . '/scripts/track_names.py '
+    let command .= '| fzf --border --prompt ' . "'Search>'"
+    let command .= " > " . l:results_file
+    let ctx = {'results_file': l:results_file, 'song_file': l:query_results}
+    let ctx['callback'] = function("QueueSongCallback")
+
+    call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
+" Select and play a playlist among current playlists
 function! vimbeats#SearchAndPlayPlaylist()
     let playlist_file = tempname()
     let results_file = tempname()
@@ -190,8 +188,34 @@ function! vimbeats#SearchAndPlayPlaylist()
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
+" Callback for playing a selected track
+" ctx is a dictionary with two fields
+"  * "song_file"  - the path of the file for all songs
+"  * "results_file" - the path of the file for the chosen selection
+function! QueueSongCallback(ctx)
+    let song_file = a:ctx['song_file']
+    let results_file = a:ctx['results_file']
+    if getfsize(l:results_file) == 0
+        return
+    endif
 
-" Callback for playing a playback
+    let song_display_name = readfile(l:results_file)[0]
+
+    let command = "jq -r $'.[] | select(.display_name==\"" . s:escape_string(song_display_name) . "\") | .id'"
+    let command .= " < " . l:song_file
+
+    " There's a chance a song can be duplicated in queries, so we index into
+    " the first options
+    let song_uri = trim(split(system(command))[0])
+    let track_id = 'spotify:track:' . l:song_uri
+
+    call vimbeats#Run('queue-song -c ' . l:track_id)
+
+    " Get display name to dispayl
+    echom "Queued: " . l:song_display_name
+endfunction
+
+" Callback for playing a selected playlist
 " ctx is a dictionary with two fields
 "  * "playlist_file"  - the path of the file for all playlists
 "  * "results_file" - the path of the file for the chosen selection

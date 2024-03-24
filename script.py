@@ -105,8 +105,10 @@ if __name__ == '__main__':
         print_if_debug(resp.status_code)
     elif args.command == 'search':
         resp = controls.search_song(auth_token, args.query)
+        out = []
         for song in resp:
-            print(f'{str(song)}###{repr(song)}')
+            out.append(song.json_dict())
+        print(json.dumps(out))
     elif args.command == 'get-playlists':
         FILE_KEY = 'local_playlists'
         if not args.no_cache:
