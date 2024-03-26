@@ -43,6 +43,12 @@ def fetch_profile(token):
     return requests.get(url, headers=add_auth_header(token))
 
 @retry_on_401
+def enable_shuffle(token):
+    url = "https://api.spotify.com/v1/me/player/shuffle"
+    params = {'state': 'true'}
+    return requests.put(url, headers=add_auth_header(token), params=params)
+
+@retry_on_401
 def get_currently_playing(token):
     url = r'https://api.spotify.com/v1/me/player/currently-playing'
     return requests.get(url, headers=add_auth_header(token))
@@ -50,6 +56,7 @@ def get_currently_playing(token):
 @retry_on_401
 def pause_playback(token):
     url = 'https://api.spotify.com/v1/me/player/pause'
+
     return requests.put(url, headers=add_auth_header(token))
 
 @retry_on_401

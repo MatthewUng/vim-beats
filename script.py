@@ -13,6 +13,7 @@ COMMANDS = [
         'pause',
         'next',
         'prev',
+        'enable-shuffle',
         'get-devices',
         'currently-playing',
         'current-song',
@@ -68,6 +69,10 @@ if __name__ == '__main__':
         print_if_debug(resp.status_code)
     elif args.command == 'prev':
         resp = controls.prev_song(auth_token)
+        print_if_debug(resp.status_code)
+    elif args.command == 'enable-shuffle':
+        resp = controls.enable_shuffle(auth_token)
+        print_if_debug(resp.text)
         print_if_debug(resp.status_code)
     elif args.command == 'get-devices':
         resp = controls.get_devices(auth_token)

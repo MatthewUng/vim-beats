@@ -99,6 +99,11 @@ function! vimbeats#CurrentlyPlaying() abort
     return out
 endfunction
 
+function! vimbeats#EnableShuffle() abort
+    let l:out = vimbeats#Run('enable-shuffle')
+    return out
+endfunction
+
 let s:play_toggle = 1
 function! vimbeats#ToggleSpotify(...)
     if s:play_toggle
