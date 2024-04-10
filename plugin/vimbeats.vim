@@ -178,6 +178,32 @@ function! vimbeats#SearchAndQueueTrack(query)
     call s:execute_cmd_in_term(l:ctx, l:command)
 endfunction
 
+function! vimbeats#SearchAndPlayPlaylist(query)
+    let query_results = tempname()
+    let results_file = tempname()
+
+    let playlist_command = s:get_run_command([
+                \'search-playlist',
+                \'--query',
+                \"'" . s:escape_string(a:query) . "'"]) . ' > ' . l:query_results
+    call system(l:playlist_command)
+
+    let command = 'cat ' . l:query_results
+    let command .= " | python3 " . s:plugindir . '/scripts/playlist_names.py '
+    let command .= ' | fzf --border --prompt ' . "'Search>'"
+    let command .= ' --header "CTRL-r to Query Again"'
+    let command .= ' --preview="' . s:get_preview_command(l:query_results) . '" '
+    let command .= " --bind 'ctrl-r:reload("
+    let command .= s:plugindir . "/scripts/reload_query_playlist.sh {q} " . l:query_results
+    let command .= ")'"
+    let command .= " > " . l:results_file
+
+    let ctx = {'results_file': l:results_file, 'playlist_file': l:query_results}
+    let ctx['callback'] = function("s:play_playlist_callback")
+
+    call s:execute_cmd_in_term(l:ctx, l:command)
+endfunction
+
 " Select and play a playlist among current playlists
 function! vimbeats#SelectAndPlayPlaylist()
     let playlist_file = tempname()
