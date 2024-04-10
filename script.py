@@ -20,6 +20,7 @@ COMMANDS = [
         'get-playlist',
         'queue-song',
         'search',
+        'search-song',
         'get-playlists',
         'get-recommendations',
         'get-queue',
@@ -108,7 +109,7 @@ if __name__ == '__main__':
         if resp.status_code >= 400:
             print_if_debug(resp.json())
         print_if_debug(resp.status_code)
-    elif args.command == 'search':
+    elif args.command == 'search-song':
         resp = controls.search_song(auth_token, args.query)
         out = []
         for song in resp:

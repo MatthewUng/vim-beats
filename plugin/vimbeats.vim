@@ -158,7 +158,7 @@ function! vimbeats#SearchAndQueueTrack(query)
     let results_file = tempname()
 
     let playlist_command = s:get_run_command([
-                \'search',
+                \'search-song',
                 \'--query',
                 \"'" . s:escape_string(a:query) . "'"]) . ' > ' . l:query_results
     call system(l:playlist_command)
