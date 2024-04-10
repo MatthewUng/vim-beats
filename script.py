@@ -15,6 +15,7 @@ COMMANDS = [
         'prev',
         'enable-shuffle',
         'get-devices',
+        'playback-state',
         'currently-playing',
         'current-song',
         'get-playlist',
@@ -73,11 +74,14 @@ if __name__ == '__main__':
         print_if_debug(resp.status_code)
     elif args.command == 'enable-shuffle':
         resp = controls.enable_shuffle(auth_token)
-        print_if_debug(resp.text)
         print_if_debug(resp.status_code)
+        print_if_debug(resp.text)
     elif args.command == 'get-devices':
         resp = controls.get_devices(auth_token)
         print_if_debug(resp.status_code)
+        pprint.pprint(resp.json())
+    elif args.command == 'playback-state':
+        resp = controls.get_playback_state(auth_token)
         pprint.pprint(resp.json())
     elif args.command == 'currently-playing':
         resp = controls.get_currently_playing(auth_token) 

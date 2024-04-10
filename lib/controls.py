@@ -45,7 +45,7 @@ def fetch_profile(token):
 @retry_on_401
 def enable_shuffle(token):
     url = "https://api.spotify.com/v1/me/player/shuffle"
-    params = {'state': 'true'}
+    params = {'state': True}
     return requests.put(url, headers=add_auth_header(token), params=params)
 
 @retry_on_401
