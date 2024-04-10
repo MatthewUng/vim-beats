@@ -168,7 +168,7 @@ function! vimbeats#SearchAndQueueTrack(query)
     let command .= ' | fzf --border --prompt ' . "'Search>'"
     let command .= ' --header "CTRL-r to Query Again"'
     let command .= " --bind 'ctrl-r:reload("
-    let command .= s:plugindir . "/scripts/reload_query.sh {q} " . l:query_results
+    let command .= s:plugindir . "/scripts/reload_query_song.sh {q} " . l:query_results
     let command .= ")'"
     let command .= " > " . l:results_file
 
