@@ -161,6 +161,20 @@ def search_song(token, query):
         out.append(json_to_song(track))
     return out
 
+def search_playlist(token, query):
+    params = {
+            'type': 'playlist',
+            'limit': 50
+            }
+
+    resp = search(token, query, params)
+
+    js = resp.json()
+    out = []
+    for playlist in js['playlists']['items']:
+        out.append(json_to_playlist(playlist))
+    return out
+
 def current_song(token):
     resp = get_currently_playing(token)
 

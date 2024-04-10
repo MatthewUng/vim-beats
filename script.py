@@ -20,7 +20,7 @@ COMMANDS = [
         'current-song',
         'get-playlist',
         'queue-song',
-        'search',
+        'search-playlist',
         'search-song',
         'get-playlists',
         'get-recommendations',
@@ -113,6 +113,13 @@ if __name__ == '__main__':
         if resp.status_code >= 400:
             print_if_debug(resp.json())
         print_if_debug(resp.status_code)
+    elif args.command == 'search-playlist':
+        out = []
+        playlists = controls.search_playlist(auth_token, args.query)
+        for playlist in playlists:
+            out.append(playlist.json_dict())
+        contents = json.dumps(out)
+        print(contents)
     elif args.command == 'search-song':
         resp = controls.search_song(auth_token, args.query)
         out = []
